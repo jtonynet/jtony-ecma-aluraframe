@@ -1,0 +1,10 @@
+{
+    "name": "app",
+    "version": "1.0.0",
+    "description": "",
+    "scripts": {
+        "start": "node server/server.js",
+        "preinstall": "cd server && npm install",
+        "postinstall": "rm -rf node_modules"
+    }
+}
