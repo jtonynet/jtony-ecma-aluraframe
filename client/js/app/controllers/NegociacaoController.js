@@ -23,19 +23,15 @@ class NegociacaoController {
             'texto'
         );
 
-        /*
-        ConnectionFactory
-            .getConnection()
-            .then(connection => {
-                new NegociacaoDao(connection)
-                    .listaTodos()
-                    .then(negociacoes => {
-                        negociacoes.forEach((negociacao) => {
-                            this._listaNegociacoes.adiciona(negociacao);
-                        })
-                    });
-            });
-        */
+        this._init();
+
+    }
+
+    _init() {
+
+        setInterval(() => {
+            this._importaNegociacoes();
+        }, 3000);
 
         ConnectionFactory
             .getConnection()
@@ -68,19 +64,25 @@ class NegociacaoController {
                     })
                     .catch(erro => this._mensagem.texto = erro);
             });
-
-        /*
-        event.preventDefault();
-        this._listaNegociacoes.adiciona(this._criaNegociacao());
-        this._mensagem.texto = 'Negociação adicionada com sucesso';
-        this._limpaFormulario();
-        */
     }
 
-    importaNegociacoes() {
+    _importaNegociacoes() {
 
         let service = new NegociacaoService();
 
+        service
+            .obterNegociacoes()
+            .then(negociacoes =>
+                negociacoes.filter(negociacao =>
+                    !this._listaNegociacoes.negociacoes.some(negociacaoExistente => JSON.stringfy(negociacao) == JSON.stringify(negociacaoExistente))
+                )
+            )
+            .then(negociacoes => negociacoes.forEach(negociacao => {
+                this._listaNegociacoes.adiciona(negociacao);
+                this._mensagem.texto = 'Negociações importadas com sucesso';
+            })).catch(error => this._mensagem.texto = error);
+
+        /*
         Promise.all([
                 service.obterNegociacoesDaSemana(),
                 service.obterNegociacoesDaSemanaAnterior(),
@@ -93,6 +95,7 @@ class NegociacaoController {
                 this._mensagem.texto = 'Negociações importadas com sucesso';
             })
             .catch(error => this._mensagem.texto = error);
+        */
     }
 
     apaga() {

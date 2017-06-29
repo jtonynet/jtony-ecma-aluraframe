@@ -49,4 +49,24 @@ class NegociacaoService {
                 });
         });
     }
+
+    obterNegociacoes() {
+
+        return new Promise((resolve, reject) => {
+
+            Promise.all([
+                this.obterNegociacoesDaSemana(),
+                this.obterNegociacoesDaSemanaAnterior(),
+                this.obterNegociacoesDaSemanaRetrasada()
+            ]).then(negociacoes => {
+                let resultado = negociacoes
+                    .reduce((arrayAchatado, array) => arrayAchatado.concat(array), []);
+
+                resolve(resultado);
+            }).catch(erro => {
+                console.log(erro);
+                reject("Erro ao importar negociações");
+            });
+        });
+    }
 }
